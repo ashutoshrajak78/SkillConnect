@@ -43,4 +43,15 @@ public class GlobalExceptionHandler {
         return new ApiError(HttpStatus.FORBIDDEN.value(), ex.getMessage());
 
     }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiError handleInvalidCredentials(
+            InvalidCredentialsException ex) {
+
+        return new ApiError(
+            HttpStatus.UNAUTHORIZED.value(),
+            ex.getMessage()
+        );
+    }
 }

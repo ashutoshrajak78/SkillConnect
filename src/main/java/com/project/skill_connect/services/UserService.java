@@ -7,6 +7,7 @@ import com.project.skill_connect.entities.Role;
 import com.project.skill_connect.entities.User;
 import com.project.skill_connect.exceptions.AdminRegistrationNotAllowedException;
 import com.project.skill_connect.exceptions.EmailAlreadyExistsException;
+import com.project.skill_connect.exceptions.InvalidCredentialsException;
 import com.project.skill_connect.repositories.UserRepository;
 
 @Service 
@@ -32,5 +33,23 @@ public class UserService {
         // Encode the password before saving
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+    }
+
+    public boolean verifyPassword(String rawPassword, String storedPassword){
+        return passwordEncoder.matches(rawPassword, storedPassword);
+    }
+
+    public User authenticateUser(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new InvalidCredentialsException("Invalid Email or Passwords"));
+        if (!verifyPassword(rawPassword, user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid Email or Password");
+        } else {
+            return user;
+        }
     }
 }

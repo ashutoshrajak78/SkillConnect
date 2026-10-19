@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.skill_connect.dto.LoginRequest;
 import com.project.skill_connect.dto.RegisterRequest;
 import com.project.skill_connect.dto.UserResponse;
 import com.project.skill_connect.entities.User;
@@ -12,14 +13,19 @@ import com.project.skill_connect.services.UserService;
 
 import jakarta.validation.Valid;
 
+import com.project.skill_connect.dto.TokenResponse;
+import com.project.skill_connect.security.JwtService;
+
 @RestController 
 @RequestMapping ("/api/auth")
 public class AuthController {
 
     private final UserService userService;
+    private final JwtService jwtService;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, JwtService jwtService) {
         this.userService = userService;
+        this.jwtService = jwtService;
     }
     
     @PostMapping("/register")
@@ -45,4 +51,20 @@ public class AuthController {
 
         return response;
     }
+
+    @PostMapping("/login")
+    public TokenResponse login(@Valid @RequestBody LoginRequest request){
+        User user = userService.authenticateUser(request.getEmail(), request.getPassword());
+        String token = jwtService.generateToken(user.getEmail());
+        return new TokenResponse(token);
+    }
 }
+
+
+
+
+
+
+
+
+
