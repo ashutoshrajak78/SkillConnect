@@ -15,7 +15,7 @@ import com.project.skill_connect.repositories.UserRepository;
 
 import com.project.skill_connect.dto.JobResponse;
 import java.util.Objects;
-import com.project.skill_connect.entities.Role;
+import com.project.skill_connect.exceptions.ResourceNotFoundException;
 
 @Service
 public class JobService {
@@ -42,7 +42,7 @@ public class JobService {
     public JobResponse getJobById(Long id) {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Job not found with ID: " + id));
+                        new ResourceNotFoundException("Job not found with ID: " + id));
 
         return toJobResponse(job);
     }
@@ -74,7 +74,7 @@ public class JobService {
     public JobResponse updateJob(Long jobId, JobRequest request, String recruiterEmail) {
 
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found with ID: " + jobId));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found with ID: " + jobId));
 
         if (!Objects.equals(job.getRecruiter().getEmail(), recruiterEmail)) {
             throw new org.springframework.security.access.AccessDeniedException(
@@ -96,7 +96,7 @@ public class JobService {
     @Transactional
     public void deleteJob(Long jobId, String recruiterEmail) {
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found with ID: " + jobId));
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found with ID: " + jobId));
 
         if (!Objects.equals(job.getRecruiter().getEmail(), recruiterEmail)) {
             throw new org.springframework.security.access.AccessDeniedException(

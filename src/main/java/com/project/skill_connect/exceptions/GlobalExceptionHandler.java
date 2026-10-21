@@ -54,4 +54,29 @@ public class GlobalExceptionHandler {
             ex.getMessage()
         );
     }
+
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiError handleResourceNotFound(
+            ResourceNotFoundException ex) {
+
+        return new ApiError(
+            HttpStatus.NOT_FOUND.value(),
+            ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiError handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException ex) {
+
+        return new ApiError(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage()
+        );
+    }
+
+
 }
