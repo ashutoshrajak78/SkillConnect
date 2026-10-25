@@ -16,6 +16,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.project.skill_connect.security.JwtService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import com.project.skill_connect.dto.JobResponse;
+import org.springframework.data.domain.Page;
+
 @WebMvcTest(JobController.class)
 class JobControllerTest {
 
@@ -77,4 +80,57 @@ class JobControllerTest {
 
         verifyNoInteractions(jobService);
     }
+
+    
+    @Test
+    void defaultSearchShouldReturn200() throws Exception {
+        when(jobService.searchJobs(
+                null, null, null, 0, 10, "createdAt", "desc"
+        )).thenReturn(Page.<JobResponse>empty());
+
+        mockMvc.perform(get("/api/jobs/search"))
+                .andExpect(status().isOk());
+
+        verify(jobService).searchJobs(
+                null, null, null, 0, 10, "createdAt", "desc"
+        );
+    }
+
+    @Test
+    void validCustomSortingShouldReturn200() throws Exception {
+        when(jobService.searchJobs(
+                null, null, null, 0, 10, "salary", "asc"
+        )).thenReturn(Page.<JobResponse>empty());
+
+        mockMvc.perform(get("/api/jobs/search")
+                        .param("sortBy", "salary")
+                        .param("direction", "asc"))
+                .andExpect(status().isOk());
+
+        verify(jobService).searchJobs(
+                null, null, null, 0, 10, "salary", "asc"
+        );
+    }
+
+    @Test
+    void validFiltersAndPaginationShouldReachService() throws Exception {
+        when(jobService.searchJobs(
+                "Java", "Remote", "Full-time", 1, 5, "salary", "asc"
+        )).thenReturn(Page.<JobResponse>empty());
+
+        mockMvc.perform(get("/api/jobs/search")
+                        .param("title", "Java")
+                        .param("location", "Remote")
+                        .param("employmentType", "Full-time")
+                        .param("page", "1")
+                        .param("size", "5")
+                        .param("sortBy", "salary")
+                        .param("direction", "asc"))
+                .andExpect(status().isOk());
+
+        verify(jobService).searchJobs(
+                "Java", "Remote", "Full-time", 1, 5, "salary", "asc"
+        );
+    }
+
 }
