@@ -118,7 +118,25 @@ public class JobService {
             job.getRecruiter().getName(),
             job.getCreatedAt()
     );
-}
+    }
+
+    public List<JobResponse> searchJobs(
+        String title,
+        String location,
+        String employmentType) {
+
+    return jobRepository.searchJobs(
+            normalizeFilter(title),
+            normalizeFilter(location),
+            normalizeFilter(employmentType)
+    ).stream()
+     .map(this::toJobResponse)
+     .toList();
+    }
+
+    private String normalizeFilter(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
+    }
 }
 
 

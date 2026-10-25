@@ -38,8 +38,13 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/register","/api/auth/login").permitAll()
-                .anyRequest().authenticated()
+            .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+            .requestMatchers(
+                org.springframework.http.HttpMethod.GET,
+                "/api/jobs",
+                "/api/jobs/**"
+            ).permitAll()
+            .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception
                 .authenticationEntryPoint((request, response, authException) ->

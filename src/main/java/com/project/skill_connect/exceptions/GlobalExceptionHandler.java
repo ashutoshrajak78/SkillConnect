@@ -78,5 +78,15 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(DuplicateApplicationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleDuplicateApplication(
+            DuplicateApplicationException ex) {
+
+        return new ApiError(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage()
+        );
+    }
 
 }
