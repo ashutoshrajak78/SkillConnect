@@ -4,10 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
+
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -87,6 +91,37 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT.value(),
                 ex.getMessage()
         );
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleConstraintViolation(
+            ConstraintViolationException ex) {
+
+        String message = ex.getConstraintViolations()
+                .stream()
+                .map(violation -> violation.getMessage())
+                .findFirst()
+                .orElse("Invalid request parameters");
+
+        return new ApiError(
+                HttpStatus.BAD_REQUEST.value(),
+                message
+        );
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiError> handleResponseStatusException(
+            ResponseStatusException ex) {
+
+        HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
+
+        ApiError error = new ApiError(
+                status.value(),
+                ex.getReason() != null ? ex.getReason() : "Request failed"
+        );
+
+        return ResponseEntity.status(status).body(error);
     }
 
 }

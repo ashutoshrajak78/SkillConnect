@@ -22,11 +22,24 @@ import com.project.skill_connect.dto.JobResponse;
 import com.project.skill_connect.services.JobService;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import org.springframework.data.domain.Page;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.springframework.validation.annotation.Validated;
+
+import java.util.Set;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+
 @RestController
 @RequestMapping("/api/jobs")
+@Validated
 public class JobController {
 
     private final JobService jobService;
+
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+        Set.of("createdAt", "salary", "title");
 
     public JobController(JobService jobService) {
         this.jobService = jobService;
@@ -77,13 +90,48 @@ public class JobController {
     }
 
     @GetMapping("/search")
-    public List<JobResponse> searchJobs(
+    public Page<JobResponse> searchJobs(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String location,
-            @RequestParam(required = false) String employmentType) {
+            @RequestParam(required = false) String employmentType,
+           @RequestParam(defaultValue = "0")
+            @Min(value = 0, message = "Page number cannot be negative")
+            int page,
 
-        return jobService.searchJobs(title, location, employmentType);
+            @RequestParam(defaultValue = "10")
+            @Min(value = 1, message = "Page size must be at least 1")
+            @Max(value = 100, message = "Page size cannot exceed 100")
+            int size,
+                        @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String direction) {
+
+                if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Invalid sort field. Allowed fields: createdAt, salary, title"
+                    );
+                }
+
+                if (!direction.equalsIgnoreCase("asc")
+                        && !direction.equalsIgnoreCase("desc")) {
+                    throw new ResponseStatusException(
+                            HttpStatus.BAD_REQUEST,
+                            "Invalid sort direction. Allowed values: asc, desc"
+                    );
+                }
+
+        return jobService.searchJobs(
+                title,
+                location,
+                employmentType,
+                page,
+                size,
+                sortBy,
+                direction
+        );
     }
+
+    
 }
 
 

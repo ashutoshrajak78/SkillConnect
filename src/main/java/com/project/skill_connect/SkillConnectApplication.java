@@ -2,8 +2,13 @@ package com.project.skill_connect;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+
 
 @SpringBootApplication
+@EnableSpringDataWebSupport(
+    pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO
+)
 public class SkillConnectApplication {
 
 	public static void main(String[] args) {

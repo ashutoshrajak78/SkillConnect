@@ -38,7 +38,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
+            .requestMatchers("/api/auth/register", "/api/auth/login", "/error").permitAll()
             .requestMatchers(
                 org.springframework.http.HttpMethod.GET,
                 "/api/jobs",

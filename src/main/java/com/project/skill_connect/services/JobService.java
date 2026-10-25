@@ -17,6 +17,12 @@ import com.project.skill_connect.dto.JobResponse;
 import java.util.Objects;
 import com.project.skill_connect.exceptions.ResourceNotFoundException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+
 @Service
 public class JobService {
 
@@ -120,19 +126,28 @@ public class JobService {
     );
     }
 
-    public List<JobResponse> searchJobs(
+  public Page<JobResponse> searchJobs(
         String title,
         String location,
-        String employmentType) {
+        String employmentType,
+        int page,
+        int size,
+        String sortBy,
+        String direction) {
+
+    Sort sort = direction.equalsIgnoreCase("desc")
+            ? Sort.by(sortBy).descending()
+            : Sort.by(sortBy).ascending();
+
+    Pageable pageable = PageRequest.of(page, size, sort);
 
     return jobRepository.searchJobs(
             normalizeFilter(title),
             normalizeFilter(location),
-            normalizeFilter(employmentType)
-    ).stream()
-     .map(this::toJobResponse)
-     .toList();
-    }
+            normalizeFilter(employmentType),
+            pageable
+    ).map(this::toJobResponse);
+}
 
     private String normalizeFilter(String value) {
         return value == null || value.isBlank() ? null : value.trim();
