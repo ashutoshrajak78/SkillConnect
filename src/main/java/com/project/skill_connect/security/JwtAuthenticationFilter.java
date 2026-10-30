@@ -48,8 +48,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             Claims claims = jwtService.extractClaims(token);
-            String email = claims.getSubject();
 
+            if (claims == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            String email = claims.getSubject();
             if (email != null
                     && SecurityContextHolder.getContext().getAuthentication() == null) {
 
