@@ -47,6 +47,14 @@ public class User {
 
     private LocalDateTime updatedAt;
 
+    @Column (length = 1000)
+    private String bio;
+
+    @Column (length = 1000)
+    private String skills;
+
+    private String profilePicture;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -123,5 +131,28 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getSkills() {
+        return skills;
+    }
+
+    public void setSkills(String skills) {
+        this.skills = skills;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
 
 }

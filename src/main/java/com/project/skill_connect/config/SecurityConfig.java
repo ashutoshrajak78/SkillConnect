@@ -44,6 +44,11 @@ public class SecurityConfig {
                 "/api/jobs",
                 "/api/jobs/**"
             ).permitAll()
+            .requestMatchers("/api/users/me").authenticated()
+            .requestMatchers(
+            org.springframework.http.HttpMethod.GET,
+            "/api/users/*"
+        ).permitAll()
             .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception
