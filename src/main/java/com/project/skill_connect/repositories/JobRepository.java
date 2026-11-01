@@ -10,6 +10,8 @@ import com.project.skill_connect.entities.Job;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.project.skill_connect.entities.User;
+import java.util.List;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
@@ -26,5 +28,9 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             @Param("employmentType") String employmentType,
             Pageable pageable
     );
+
+    long countByRecruiterId(Long recruiterId);
+
+    List<Job> findByRecruiterId(Long recruiterId);
 }
 

@@ -53,6 +53,7 @@ public class SecurityConfig {
             org.springframework.http.HttpMethod.GET,
             "/api/portfolio/freelancer/*"
         ).permitAll()
+        .requestMatchers("/api/recruiter/**").authenticated()
             .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception
