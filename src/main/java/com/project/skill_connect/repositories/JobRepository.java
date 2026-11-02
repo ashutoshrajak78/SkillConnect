@@ -10,15 +10,16 @@ import com.project.skill_connect.entities.Job;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import com.project.skill_connect.entities.User;
 import java.util.List;
+import com.project.skill_connect.entities.JobStatus;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
 
     @Query("""
         SELECT j FROM Job j
-        WHERE (:title IS NULL OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%')))
+        WHERE j.status = com.project.skill_connect.entities.JobStatus.APPROVED
+        AND (:title IS NULL OR LOWER(j.title) LIKE LOWER(CONCAT('%', :title, '%')))
         AND (:location IS NULL OR LOWER(j.location) LIKE LOWER(CONCAT('%', :location, '%')))
         AND (:employmentType IS NULL OR LOWER(j.employmentType) = LOWER(:employmentType))
         """)
@@ -32,5 +33,14 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     long countByRecruiterId(Long recruiterId);
 
     List<Job> findByRecruiterId(Long recruiterId);
+
+    // Find jobs by moderation status with pagination
+    Page<Job> findByStatus(JobStatus status, Pageable pageable);
+
+    // Count jobs by moderation status
+    long countByStatus(JobStatus status);
+
+    // Get only approved jobs
+    List<Job> findByStatus(JobStatus status);
 }
 

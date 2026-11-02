@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.project.skill_connect.entities.Job;
+import com.project.skill_connect.entities.JobStatus;
 import com.project.skill_connect.repositories.JobRepository;
 
 import com.project.skill_connect.dto.JobRequest;
@@ -37,7 +38,7 @@ public class JobService {
     // Get all jobs
     @Transactional(readOnly = true)
     public List<JobResponse> getAllJobs() {
-        return jobRepository.findAll()
+        return jobRepository.findByStatus(JobStatus.APPROVED)
                 .stream()
                 .map(this::toJobResponse)
                 .toList();
@@ -47,8 +48,10 @@ public class JobService {
     @Transactional(readOnly = true)
     public JobResponse getJobById(Long id) {
         Job job = jobRepository.findById(id)
+                .filter(j -> j.getStatus() == JobStatus.APPROVED)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Job not found with ID: " + id));
+                        new ResourceNotFoundException(
+                                "Approved job not found with ID: " + id));
 
         return toJobResponse(job);
     }
@@ -72,6 +75,8 @@ public class JobService {
         job.setEmploymentType(request.getEmploymentType());
         job.setRecruiter(recruiter);
 
+        job.setStatus(JobStatus.PENDING);
+        
         Job savedJob = jobRepository.save(job);
         return toJobResponse(savedJob);
     }
@@ -93,6 +98,8 @@ public class JobService {
         job.setSalary(request.getSalary());
         job.setEmploymentType(request.getEmploymentType());
 
+        job.setStatus(JobStatus.PENDING);
+        
         Job updatedJob = jobRepository.save(job);
 
         return toJobResponse(updatedJob);
@@ -152,6 +159,8 @@ public class JobService {
     private String normalizeFilter(String value) {
         return value == null || value.isBlank() ? null : value.trim();
     }
+
+    
 }
 
 

@@ -19,6 +19,9 @@ import jakarta.validation.constraints.Positive;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 @Entity
 @Table(name = "jobs")
 public class Job {
@@ -67,6 +70,10 @@ public class Job {
     @ManyToOne
     @JoinColumn(name = "recruiter_id", nullable = false)
     private User recruiter;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private JobStatus status = JobStatus.PENDING;
 
     public Job() {
     }
@@ -133,6 +140,14 @@ public class Job {
 
     public void setRecruiter(User recruiter) {
         this.recruiter = recruiter;
+    }
+
+    public JobStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(JobStatus status) {
+        this.status = status;
     }
 }
 
