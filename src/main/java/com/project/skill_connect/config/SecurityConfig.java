@@ -54,6 +54,7 @@ public class SecurityConfig {
             "/api/portfolio/freelancer/*"
         ).permitAll()
         .requestMatchers("/api/recruiter/**").authenticated()
+        .requestMatchers("/api/admin/**").hasRole("ADMIN")
             .anyRequest().authenticated()
             )
             .exceptionHandling(exception -> exception

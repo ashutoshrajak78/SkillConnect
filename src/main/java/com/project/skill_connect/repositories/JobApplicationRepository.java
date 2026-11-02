@@ -46,6 +46,7 @@ List<Object[]> countApplicationsPerJob(
         @Param("recruiterId") Long recruiterId
 );
 
+long countByStatus(ApplicationStatus status);
 
 }
 

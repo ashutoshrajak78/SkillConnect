@@ -45,11 +45,20 @@ public class UserService {
     }
 
     public User authenticateUser(String email, String rawPassword) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new InvalidCredentialsException("Invalid Email or Passwords"));
-        if (!verifyPassword(rawPassword, user.getPassword())) {
-            throw new InvalidCredentialsException("Invalid Email or Password");
-        } else {
-            return user;
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new InvalidCredentialsException("Invalid email or password"));
+
+        if (!user.isActive()) {
+            throw new InvalidCredentialsException(
+                    "Your account has been deactivated. Please contact the administrator.");
         }
+
+        if (!verifyPassword(rawPassword, user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        return user;
     }
 }
